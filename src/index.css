@@ -1,0 +1,10 @@
+/* Tüm web sayfasının varsayılan boşluk ayarını sıfırlıyoruz */
+body {
+  margin: 0;
+}
+
+/* Pixel-LCD-7 yazı tipi, retro oyun stiline uygun özel bir yazı tipidir */
+@font-face {
+  font-family: 'Pixel';
+  src: url('font/Pixel-LCD-7.woff') format('woff');
+}
