@@ -21,7 +21,8 @@ const BaslatDugmesiStili = styled.button`
 
 // BaslatDugmesi bileşeni, oyunu başlatmak için bir buton sağlar
 const BaslatDugmesi = ({ geriCagir }) => (
-  <BaslatDugmesiStili onClick={geriCagir}>Oyunu Başlat</BaslatDugmesiStili>
+  <BaslatDugmesiStili onClick={geriCagir}>Oyunu BaSlat</BaslatDugmesiStili>
 );
 
 export default BaslatDugmesi; // BaslatDugmesi bileşenini dışa aktarıyoruz
+export { BaslatDugmesiStili }; // BaslatDugmesi yazı stilini dışa aktarıyoruz
