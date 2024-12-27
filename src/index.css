@@ -1,6 +1,11 @@
 /* Tüm web sayfasının varsayılan boşluk ayarını sıfırlıyoruz */
-body {
+html, body {
+  width: 100%;
+  height: 100%;
   margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Taşmaları önler */
+  overflow: hidden; /* Scroll çubuklarını tamamen kaldırır */
 }
 
 /* Pixel-LCD-7 yazı tipi, retro oyun stiline uygun özel bir yazı tipidir */
