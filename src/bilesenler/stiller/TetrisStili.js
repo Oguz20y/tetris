@@ -22,6 +22,7 @@ export const TetrisStili = styled.div`
   width: 100%; /* Ekranın %100'ünü kaplar */
   margin: 0 auto; /* X düzleminde ortalar */
   margin-right: 60px; /* Oyun ekranını sağa kaydırır (Bu değeri artırıp azaltabilirsiniz) */
+  
 
   aside {
     width: 100%; /* Yan alanın genişliği */
