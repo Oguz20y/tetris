@@ -9,7 +9,7 @@ const SkorTablosu = ({ skorlar, yazıBoyutu = '0.8rem', bosluk = '10px' }) => {
         {skorlar.length > 0 ? (
           skorlar.map((skor, index) => (
             <li key={index} style={{ marginBottom: bosluk }}>
-              {index + 1}. {skor.ad}: {skor.puan} Puan
+              {index + 1}. {skor.ad}: {skor.puan}
             </li>
           ))
         ) : (
