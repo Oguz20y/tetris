@@ -19,6 +19,7 @@ import { BaslatDugmesiStili } from './BaslatDugmesi';
 // Skor Tablosu için stiller
 import { SkorTablosuStili }  from './stiller/SkorTablosuStili';
 import AdBileseni from './AdBileseni';
+import SesKontrolleri from './SesKontrolleri';
 
 // DurdurDugmesi bileşeni, oyunu durdurmak için bir buton sağlar
 const DurdurDugmesi = ({ geriCagir }) => (
@@ -171,6 +172,19 @@ const Tetris = () => {
         }
     };
 
+    const [level, setLevel] = useState(1); // Başlangıç seviyesi 1
+
+    useEffect(() => {
+      // Seviyeyi her 4 satırda bir artır
+      const yeniLevel = Math.min(10, Math.floor(satirlar / 3) + 1); // Maksimum seviye 10
+      setLevel(yeniLevel);
+    
+      // Eğer seviye 10'dan küçükse düşme süresini kısalt
+      if (yeniLevel <= 10) {
+        dusmeSuresiAyarla(1000 - (yeniLevel - 1) * 50); // Hız her seviyede 50 ms azalır
+      }
+    }, [satirlar, dusmeSuresiAyarla]);
+
     // Blokların aşağıya iniş fonksiyonu
     zamanlayiciKullan(() => {
         if (!oyunDuraklatildi) {
@@ -245,6 +259,7 @@ const Tetris = () => {
     };
     // <button onClick={skorTablosunuTemizle}>Skor Tablosunu Temizle</button>
 
+
     // Oyun menüsü kısmı
     return (
       <TetrisSarmal role="button" tabIndex="0">
@@ -255,21 +270,23 @@ const Tetris = () => {
                   <Gosterge metin={`En Yuksek Skor: ${enYuksekPuan}`} />
                   <Gosterge metin={`Skor: ${puan}`} />
                   <Gosterge metin={`SatIrlar: ${satirlar}`} />
-                  <AdBileseni onAdDegisti={handleAdDegisti} />
-                  <div style={{ backgroundColor: '#000', padding: '10px', borderRadius: '8px', marginBottom: '10px' }}>
-                      <Gosterge metin="Muzik Sesi" />
-                      <input type="range" min="0" max="1" step="0.01" value={muzikSesSeviyesi} onChange={(e) => setMuzikSesSeviyesi(parseFloat(e.target.value))} style={{ width: '100%' }} />
-                  </div>
-                  <div style={{ backgroundColor: '#000', padding: '10px', borderRadius: '8px', marginBottom: '10px' }}>
-                      <Gosterge metin="SFX Sesi" />
-                      <input type="range" min="0" max="1" step="0.01" value={sfxSesSeviyesi} onChange={(e) => setSfxSesSeviyesi(parseFloat(e.target.value))} style={{ width: '100%' }} />
-                  </div>
+                  <Gosterge metin={`Level: ${level}`} />
+                  <AdBileseni onAdDegisti={handleAdDegisti} />             
                   <BaslatDugmesi geriCagir={oyunuBaslat} />
                   {oyunDuraklatildi ? <DevamDugmesi geriCagir={oyunuDuraklat} /> : <DurdurDugmesi geriCagir={oyunuDuraklat} />}
+                  <BaslatDugmesiStili onClick={skorTablosunuTemizle}> Skor Tablosunu Temizle </BaslatDugmesiStili>  
+                  {/* Ses Kontrolleri Bileşeni */}
+                  <SesKontrolleri
+                    muzikSesSeviyesi={muzikSesSeviyesi}
+                    setMuzikSesSeviyesi={setMuzikSesSeviyesi}
+                    sfxSesSeviyesi={sfxSesSeviyesi}
+                    setSfxSesSeviyesi={setSfxSesSeviyesi}
+                  />              
               </aside>
           </TetrisStili>
           {/* Büyük yazı ve geniş boşluklar */}
           <SkorTablosu skorlar={skorlar} yazıBoyutu="1rem" bosluk="20px" />
+          {/* Skor Tablosunu Temizle Butonu */}
       </TetrisSarmal>
       
   );
