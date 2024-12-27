@@ -17,7 +17,7 @@ export const TetrisSarmal = styled.div`
 export const TetrisStili = styled.div`
   display: flex; /* Sahne ve puan alanını yan yana dizer */
   align-items: flex-start; /* İçerikleri yukarıdan hizalar */
-  padding: 40px; /* Dış boşluk ekler */
+  padding: 0px; /* Dış boşluk ekler */
   max-width: 900px; /* Maksimum genişlik ayarlandı */
   width: 100%; /* Ekranın %100'ünü kaplar */
   margin: 0 auto; /* X düzleminde ortalar */

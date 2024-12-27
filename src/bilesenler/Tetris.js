@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import SkorTablosu from './SkorTablosu';
 // Oyun yardımcı fonksiyonlarını içe aktarıyoruz
 import { sahneyiOlustur as sahneOlustur, carpismayiKontrolEt as carpismaKontrol } from '../oyunYardimcilar';
 import { TetrisSarmal, TetrisStili } from './stiller/TetrisStili';
@@ -15,6 +15,10 @@ import Sahne from './Sahne';
 import Gosterge from './Gosterge';
 import BaslatDugmesi from './BaslatDugmesi';
 import { BaslatDugmesiStili } from './BaslatDugmesi';
+
+// Skor Tablosu için stiller
+import { SkorTablosuStili }  from './stiller/SkorTablosuStili';
+import AdBileseni from './AdBileseni';
 
 // DurdurDugmesi bileşeni, oyunu durdurmak için bir buton sağlar
 const DurdurDugmesi = ({ geriCagir }) => (
@@ -59,6 +63,19 @@ const Tetris = () => {
     const [puan, puanAyarla, satirlar, satirlarAyarla] = oyunDurumuKullan(temizlenenSatirlar);
 
 
+    const [oyuncuAdi, setOyuncuAdi] = useState('');
+
+    // Skor tablosunu yerel depodan yükleme
+    const [skorlar, setSkorlar] = useState(() => {
+        const kaydedilenSkorlar = localStorage.getItem('skorTablosu');
+        return kaydedilenSkorlar ? JSON.parse(kaydedilenSkorlar) : [];
+    });
+
+    // Skorları yerel depoya kaydetme
+    useEffect(() => {
+        localStorage.setItem('skorTablosu', JSON.stringify(skorlar));
+    }, [skorlar]);
+    
     // Müzik ve ses seviyelerini ayarlama
     useEffect(() => {
         arkaPlanMuzigi.volume = muzikSesSeviyesi;
@@ -85,7 +102,7 @@ const Tetris = () => {
                   yonTusuSesi.play().catch(error => console.log('Yukarı tuşu sesi çalma hatası:', error));
               }
           }
-          if (keyCode === 13) {
+          if (keyCode === 32) {
               oyunuBaslat();
           }
       };
@@ -104,6 +121,24 @@ const Tetris = () => {
 
     // Oyunu başlatma fonksiyonu
     const oyunuBaslat = () => {
+        if (!oyuncuAdi) {
+            alert('Lütfen bir oyuncu adı girin!');
+            return;
+          }
+        
+          setSkorlar((prevSkorlar) => {
+            const normalizedAd = oyuncuAdi.toLowerCase();
+        
+            // Eğer oyuncu zaten skor tablosundaysa tabloyu değiştirme
+            if (prevSkorlar.find((skor) => skor.ad.toLowerCase() === normalizedAd)) {
+              return prevSkorlar;
+            }
+        
+            // Yeni oyuncuyu tabloya ekle
+            const yeniSkorlar = [...prevSkorlar, { ad: oyuncuAdi, puan: 0 }];
+            yeniSkorlar.sort((a, b) => b.puan - a.puan);
+            return yeniSkorlar.slice(0, 10);
+          });
         sahneAyarla(sahneOlustur());
         dusmeSuresiAyarla(1000);
         oyuncuSifirla();
@@ -115,6 +150,7 @@ const Tetris = () => {
         arkaPlanMuzigi.pause();
         arkaPlanMuzigi.currentTime = 0;
         arkaPlanMuzigi.play().catch(error => console.log('Müzik oynatma hatası:', error));
+        
     };
 
     // Blok düşürme fonksiyonu
@@ -151,7 +187,7 @@ const Tetris = () => {
             arkaPlanMuzigi.play().catch(error => console.log('Müzik oynatma hatası:', error));
         }
     };
-    
+
     // En yüksek skorun ayarlanması
     useEffect(() => {
       if (puan > enYuksekPuan) {
@@ -159,6 +195,55 @@ const Tetris = () => {
           localStorage.setItem('enYuksekPuan', puan);
       }
     }, [puan, enYuksekPuan]);
+    
+    
+    // Ad değiştiğinde yeni eleman ekleme
+    const handleAdDegisti = (ad) => {
+      const normalizedAd = ad.trim().toLowerCase(); // Adı normalize et (küçük harfe çevir ve boşlukları kaldır)
+      setOyuncuAdi(normalizedAd);
+    
+      setSkorlar((prevSkorlar) => {
+        // Eğer ad zaten skor tablosundaysa tabloyu değiştirme
+        if (prevSkorlar.find((skor) => skor.ad.toLowerCase() === normalizedAd)) {
+          return prevSkorlar;
+        }
+    
+        // Yeni oyuncuyu 0 puanla ekle
+        const yeniSkorlar = [...prevSkorlar, { ad: ad.trim(), puan: 0 }];
+    
+        // Skor tablosunu sıralama ve maksimum 10 elemanla sınırla
+        yeniSkorlar.sort((a, b) => b.puan - a.puan);
+        return yeniSkorlar.slice(0, 10);
+      });
+    };
+    
+    // Oyuncu yenildiğinde skor güncelleme
+    useEffect(() => {
+      if (oyunBitti && oyuncuAdi) {
+        setSkorlar((prevSkorlar) => {
+          const normalizedAd = oyuncuAdi.toLowerCase();
+    
+          // Skor tablosunda oyuncunun skorunu güncelle
+          const yeniSkorlar = prevSkorlar.map((skor) =>
+            skor.ad.toLowerCase() === normalizedAd
+              ? { ...skor, puan: Math.max(skor.puan, puan) } // En yüksek skoru kaydet
+              : skor
+          );
+    
+          // Skor tablosunu sıralama ve maksimum 10 elemanla sınırla
+          yeniSkorlar.sort((a, b) => b.puan - a.puan);
+          return yeniSkorlar.slice(0, 10);
+        });
+      }
+    }, [oyunBitti, oyuncuAdi, puan]);
+
+    
+    const skorTablosunuTemizle = () => {
+        setSkorlar([]); // Skor tablosunu sıfırla
+        localStorage.removeItem('skorTablosu'); // Yerel depodaki skorları sil
+        localStorage.removeItem('enYuksekPuan'); // Yerel depodaki skorları sil
+    };
+    // <button onClick={skorTablosunuTemizle}>Skor Tablosunu Temizle</button>
 
     // Oyun menüsü kısmı
     return (
@@ -170,6 +255,7 @@ const Tetris = () => {
                   <Gosterge metin={`En Yuksek Skor: ${enYuksekPuan}`} />
                   <Gosterge metin={`Skor: ${puan}`} />
                   <Gosterge metin={`SatIrlar: ${satirlar}`} />
+                  <AdBileseni onAdDegisti={handleAdDegisti} />
                   <div style={{ backgroundColor: '#000', padding: '10px', borderRadius: '8px', marginBottom: '10px' }}>
                       <Gosterge metin="Muzik Sesi" />
                       <input type="range" min="0" max="1" step="0.01" value={muzikSesSeviyesi} onChange={(e) => setMuzikSesSeviyesi(parseFloat(e.target.value))} style={{ width: '100%' }} />
@@ -182,7 +268,10 @@ const Tetris = () => {
                   {oyunDuraklatildi ? <DevamDugmesi geriCagir={oyunuDuraklat} /> : <DurdurDugmesi geriCagir={oyunuDuraklat} />}
               </aside>
           </TetrisStili>
+          {/* Büyük yazı ve geniş boşluklar */}
+          <SkorTablosu skorlar={skorlar} yazıBoyutu="1rem" bosluk="20px" />
       </TetrisSarmal>
+      
   );
 };
 
