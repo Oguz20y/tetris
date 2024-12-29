@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types'; // PropTypes kütüphanesini ekliyoruz
 import Gosterge from './Gosterge';
 
 const SesKontrolleri = ({ muzikSesSeviyesi, setMuzikSesSeviyesi, sfxSesSeviyesi, setSfxSesSeviyesi }) => {
@@ -38,6 +39,14 @@ const SesKontrolleri = ({ muzikSesSeviyesi, setMuzikSesSeviyesi, sfxSesSeviyesi,
       </div>
     </div>
   );
+};
+
+// PropTypes doğrulaması
+SesKontrolleri.propTypes = {
+  muzikSesSeviyesi: PropTypes.number.isRequired, // muzikSesSeviyesi bir sayı ve zorunlu
+  setMuzikSesSeviyesi: PropTypes.func.isRequired, // setMuzikSesSeviyesi bir fonksiyon ve zorunlu
+  sfxSesSeviyesi: PropTypes.number.isRequired, // sfxSesSeviyesi bir sayı ve zorunlu
+  setSfxSesSeviyesi: PropTypes.func.isRequired, // setSfxSesSeviyesi bir fonksiyon ve zorunlu
 };
 
 export default SesKontrolleri;

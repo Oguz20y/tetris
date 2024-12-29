@@ -1,71 +1,86 @@
 import { useState, useEffect } from 'react';
 import { sahneyiOlustur } from '../oyunYardimcilar';
 
-// Oyun sahnesini kontrol etmek için özel hook
 export const useStage = (oyuncu, oyuncuSifirla) => {
-  // Sahne ve temizlenen satır sayısı için state oluşturuluyor
-  const [sahne, sahneAyarla] = useState(sahneyiOlustur()); // Oyun sahnesini başlatır
-  const [temizlenenSatirlar, temizlenenSatirlarAyarla] = useState(0); // Temizlenen satır sayısını izlemek için state
+  // 1) State'leri daha yaygın konvansiyona göre adlandırdık.
+  const [sahne, setSahne] = useState(sahneyiOlustur());
+  const [temizlenenSatirlar, setTemizlenenSatirlar] = useState(0);
 
-  useEffect(() => {
-    temizlenenSatirlarAyarla(0); // Her güncellemede temizlenen satır sayısını sıfırla
+  /**
+   * @description
+   * Dolu satırları tespit edip temizleyip, temizlenen satır sayısını günceller.
+   */
+  const satirlariTemizle = (yeniSahne) => {
+    // Kaç satırın tamamen dolu olduğunu bul
+    const temizlenenSatirSayisi = yeniSahne.reduce((toplam, satir) => {
+      if (satir.every((hucre) => hucre[0] !== 0)) {
+        return toplam + 1; // Dolu satır buldukça artır
+      }
+      return toplam;
+    }, 0);
 
-    // Dolu satırları tespit edip sahneden kaldırır ve yeni boş satırlar ekler
-    const satirlariTemizle = yeniSahne => {
-      const temizlenenSatirSayisi = yeniSahne.reduce((toplam, satir) => {
-        if (satir.every(hucre => hucre[0] !== 0)) { // Satırdaki her hücre boş değilse
-          toplam += 1; // Tam dolu satır bulunduğunda sayaç artırılır
+    // Dolu satırları sahneden çıkar
+    let yeniSahneGuncel = yeniSahne.filter(
+      (satir) => !satir.every((hucre) => hucre[0] !== 0)
+    );
+
+    // Yukarıdan boş satır ekle
+    for (let i = 0; i < temizlenenSatirSayisi; i++) {
+      yeniSahneGuncel.unshift(
+        new Array(yeniSahne[0].length).fill([0, 'temizle'])
+      );
+    }
+
+    // Kaç satır temizlendiğini state'e yaz
+    setTemizlenenSatirlar(temizlenenSatirSayisi);
+
+    // Güncellenmiş sahneyi döndür
+    return yeniSahneGuncel;
+  };
+
+  /**
+   * @description
+   * Oyuncunun tetrominosunu sahneye ekler ve eğer tetromino bir yere çarptıysa
+   * satır temizlik işlemini de yapar.
+   */
+  const sahneyiGuncelle = (oncekiSahne) => {
+    // 1) Önceki sahnedeki "temizle" etiketli hücreleri sıfırla
+    const yeniSahne = oncekiSahne.map((satir) =>
+      satir.map((hucre) => (hucre[1] === 'temizle' ? [0, 'temizle'] : hucre))
+    );
+
+    // 2) Oyuncunun mevcut tetrominosunu ekle
+    oyuncu.tetromino.forEach((satir, y) => {
+      satir.forEach((deger, x) => {
+        if (deger !== 0) {
+          // Hücre boş değilse tetromino parçasını yerleştir
+          yeniSahne[y + oyuncu.konum.y][x + oyuncu.konum.x] = [
+            deger,
+            oyuncu.carpti ? 'birlesti' : 'temizle',
+          ];
         }
-        return toplam;
-      }, 0);
-
-      // Dolu satırları sil ve yukarıdan boş satır ekle
-      const yeniSahneGuncel = yeniSahne.filter(
-        satir => !satir.every(hucre => hucre[0] !== 0)
-      );
-
-      // Boş satırları yukarı ekle
-      for (let i = 0; i < temizlenenSatirSayisi; i++) {
-        yeniSahneGuncel.unshift(
-          new Array(yeniSahne[0].length).fill([0, 'temizle']) // Boş bir satır ekle
-        );
-      }
-
-      temizlenenSatirlarAyarla(temizlenenSatirSayisi); /// Temizlenen satır sayısını güncelle
-
-      return yeniSahneGuncel; // Güncellenmiş sahneyi döndür
-    };
-
-    // Oyun sahnesini güncellemek için fonksiyon
-    const sahneyiGuncelle = oncekiSahne => {
-      // Önceki sahnedeki "temizle" etiketli hücreleri sıfırla
-      const yeniSahne = oncekiSahne.map(satir =>
-        satir.map(hucre => (hucre[1] === 'temizle' ? [0, 'temizle'] : hucre))
-      );
-
-      // Oyuncunun mevcut tetrominosunu sahneye ekle
-      oyuncu.tetromino.forEach((satir, y) => {
-        satir.forEach((deger, x) => {
-          if (deger !== 0) { // Tetromino hücresinin boş olmaması
-            yeniSahne[y + oyuncu.konum.y][x + oyuncu.konum.x] = [
-              deger, // Hücrenin değeri (tetromino parçası)
-              `${oyuncu.carpti ? 'birlesti' : 'temizle'}`, // Çarpma durumu kontrol edilir
-            ];
-          }
-        });
       });
+    });
 
-      if (oyuncu.carpti) { // Oyuncunun tetrominosu bir yere çarptığında
-        oyuncuSifirla(); // Oyuncunun pozisyonu ve tetrominosu sıfırlanır
-        return satirlariTemizle(yeniSahne); // Satırları temizle ve yeni sahneyi döndür
-      }
+    // 3) Tetromino çarptıysa oyuncuyu sıfırla ve satırları temizle
+    if (oyuncu.carpti) {
+      oyuncuSifirla();
+      return satirlariTemizle(yeniSahne);
+    }
 
-      return yeniSahne; // Güncellenmiş sahneyi döndür
-    };
+    return yeniSahne; // Çarpma yoksa sadece yeni sahneyi döndür
+  };
 
-    // Sahneyi güncelleme işlemini başlat
-    sahneAyarla(onceki => sahneyiGuncelle(onceki));
-  }, [oyuncu.carpti, oyuncu.konum, oyuncu.tetromino, oyuncuSifirla]); // Oyuncunun konum, çarpma durumu ve tetrominosu değiştiğinde yeniden çalışır
+  // useEffect içinde mümkün olduğunca az kod tutarak, fonksiyonları dışarı taşıdık.
+  useEffect(() => {
+    // Her render'da yeniden tetikleneceği için, önce temizlenen satır sayısını 0'la
+    setTemizlenenSatirlar(0);
 
-  return [sahne, sahneAyarla, temizlenenSatirlar]; // Sahne, sahneyi ayarlama fonksiyonu ve temizlenen satır sayısını döndür
+    // Ardından sahneyi güncelle
+    setSahne((oncekiSahne) => sahneyiGuncelle(oncekiSahne));
+    // Dependencies: oyuncunun konumu, tetrominosu veya çarpma durumu değiştiğinde
+  }, [oyuncu.carpti, oyuncu.konum, oyuncu.tetromino, oyuncuSifirla]);
+
+  // Dışarıya sahne, sahneyi ayarlama fonksiyonu ve temizlenen satır sayısı döndürülür
+  return [sahne, setSahne, temizlenenSatirlar];
 };

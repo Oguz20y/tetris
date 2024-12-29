@@ -1,0 +1,14 @@
+/* Oyun sahnesinin genel stili */
+.sahne {
+  display: grid;
+  grid-gap: 1px; /* Hücreler arasındaki boşluk */
+  border: 2px solid #333; /* Dış kenarlık */
+  width: 100%; /* Genişlik */
+  max-width: 25vw; /* Maksimum genişlik */
+  background: #111; /* Arka plan rengi */
+  grid-template-rows: repeat(
+    var(--sahne-yukseklik),
+    calc(25vw / var(--sahne-genislik))
+  );
+  grid-template-columns: repeat(var(--sahne-genislik), 1fr);
+}

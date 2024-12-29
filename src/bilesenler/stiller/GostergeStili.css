@@ -1,0 +1,25 @@
+/* Oyun göstergesi genel stili */
+.gosterge-stili {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  margin: 0 0 20px 0;
+  padding: 20px;
+  border: 4px solid #333;
+  min-height: 30px;
+  width: 100%;
+  border-radius: 20px;
+  background: #000; /* Arka plan rengi siyah */
+  font-family: Pixel, Arial, Helvetica, sans-serif;
+  font-size: 0.8rem; /* Yazı boyutu */
+}
+
+/* Normal yazı rengi */
+.gosterge-stili.normal {
+  color: #999; /* Yazı rengi */
+}
+
+/* Oyun bittiğinde yazı rengi */
+.gosterge-stili.oyun-bitti {
+  color: red; /* Yazı rengi kırmızı */
+}

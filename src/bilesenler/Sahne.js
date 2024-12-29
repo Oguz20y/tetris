@@ -1,16 +1,35 @@
 import React from 'react';
-// Sahne bileşeninin stilini içe aktarıyoruz
-import { SahneStili } from './stiller/SahneStili';
-// Hucre bileşenini içe aktarıyoruz
-import Hucre from './Hucre';
+import PropTypes from 'prop-types'; // PropTypes kütüphanesini ekliyoruz
+import './stiller/SahneStili.css'; // CSS dosyasını içe aktar
+import Hucre from './Hucre'; // Hucre bileşenini içe aktarıyoruz
 
 // Sahne bileşeni, oyun alanını ızgara şeklinde oluşturur
-const Sahne = ({ sahne }) => (
-  <SahneStili genislik={sahne[0].length} yukseklik={sahne.length}>
-    {sahne.map((satir, y) => 
-      satir.map((hucre, x) => <Hucre key={x} tur={hucre[0]} />)
-    )}
-  </SahneStili>
-);
+const Sahne = ({ sahne }) => {
+  const genislik = sahne[0].length;
+  const yukseklik = sahne.length;
+
+  return (
+    <div
+      className="sahne"
+      style={{
+        '--sahne-genislik': genislik,
+        '--sahne-yukseklik': yukseklik,
+      }}
+    >
+      {sahne.map((satir, y) =>
+        satir.map((hucre, x) => <Hucre key={`${y}-${x}`} tur={hucre[0]} />)
+      )}
+    </div>
+  );
+};
+
+// PropTypes ile 'sahne' prop'unun doğrulamasını yapıyoruz
+Sahne.propTypes = {
+  sahne: PropTypes.arrayOf(
+    PropTypes.arrayOf(
+      PropTypes.oneOfType([PropTypes.number, PropTypes.array])
+    )
+  ).isRequired,
+};
 
 export default Sahne; // Sahne bileşenini dışa aktarıyoruz
