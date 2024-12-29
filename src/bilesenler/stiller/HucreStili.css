@@ -1,0 +1,16 @@
+/* Genel hücre stili */
+.hucre {
+  width: auto;
+
+  border: 4px solid;
+  background: rgba(var(--hucre-renk), 0.8); /* Hücre rengi */
+  border-bottom-color: rgba(var(--hucre-renk), 0.1);
+  border-right-color: rgba(var(--hucre-renk), 1);
+  border-top-color: rgba(var(--hucre-renk), 1);
+  border-left-color: rgba(var(--hucre-renk), 0.3);
+}
+
+/* Tür 0 olan hücreler için sınır kaldır */
+.hucre.tur-0 {
+  border: 0px solid;
+}

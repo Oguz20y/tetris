@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { AdStili, InputStili } from './stiller/AdStili';
+import PropTypes from 'prop-types'; // PropTypes kütüphanesini ekliyoruz
+import './stiller/AdStili.css'; // CSS dosyasını içe aktar
 
 const AdBileseni = ({ onAdDegisti }) => {
   const [ad, setAd] = useState('');
@@ -21,18 +22,24 @@ const AdBileseni = ({ onAdDegisti }) => {
   };
 
   return (
-    <AdStili>
+    <div className="ad-stili">
       <label htmlFor="ad">Ad:</label>
-      <InputStili
+      <input
+        className="input-stili"
         id="ad"
         type="text"
-        placeholder="AdInIzI giriniz..."
+        placeholder="Adinizi giriniz..."
         value={ad}
         onChange={handleInputChange}
         onKeyDown={handleKeyPress} // Enter tuşunu dinler
       />
-    </AdStili>
+    </div>
   );
+};
+
+// PropTypes doğrulaması
+AdBileseni.propTypes = {
+  onAdDegisti: PropTypes.func.isRequired, // onAdDegisti bir fonksiyon ve zorunlu
 };
 
 export default AdBileseni;

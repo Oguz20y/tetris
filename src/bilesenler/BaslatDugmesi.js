@@ -1,5 +1,5 @@
 import React from 'react';
-// Stil bileşeni styled-components ile oluşturuluyor
+import PropTypes from 'prop-types'; // PropTypes kütüphanesini ekliyoruz
 import styled from 'styled-components';
 
 // Butonun stilleri
@@ -21,8 +21,13 @@ const BaslatDugmesiStili = styled.button`
 
 // BaslatDugmesi bileşeni, oyunu başlatmak için bir buton sağlar
 const BaslatDugmesi = ({ geriCagir }) => (
-  <BaslatDugmesiStili onClick={geriCagir}>Oyunu BaSlat</BaslatDugmesiStili>
+  <BaslatDugmesiStili onClick={geriCagir}>Oyunu Baslat</BaslatDugmesiStili>
 );
+
+// PropTypes doğrulaması
+BaslatDugmesi.propTypes = {
+  geriCagir: PropTypes.func.isRequired, // geriCagir bir fonksiyon ve zorunlu
+};
 
 export default BaslatDugmesi; // BaslatDugmesi bileşenini dışa aktarıyoruz
 export { BaslatDugmesiStili }; // BaslatDugmesi yazı stilini dışa aktarıyoruz

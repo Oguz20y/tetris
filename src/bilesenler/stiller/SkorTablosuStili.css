@@ -1,0 +1,15 @@
+/* Skor tablosu genel stili */
+.skor-tablosu {
+  background: #000; /* Arka plan rengi siyah */
+  color: #999; /* Yazı rengi */
+  font-family: Pixel, Arial, Helvetica, sans-serif; /* Yazı tipi */
+  font-size: 0.8rem; /* Yazı boyutu */
+  padding: 10px; /* İçerik boşluğu */
+  border-radius: 10px; /* Köşelerin yuvarlanması */
+  margin: 10px 0; /* Üst ve alt boşluk */
+  width: 15vw; /* Genişlik */
+  min-height: 50vh; /* Minimum yükseklik */
+  position: relative; /* Eski renderları gizler */
+  z-index: 10; /* Üstteki renderın altındakini gizlemesini sağlar */
+  left: -20px; /* Sola kaydırma */
+}

@@ -10,10 +10,10 @@ export const TETROMINOLAR = {
     Z: { sekil: [['Z', 'Z', 0], [0, 'Z', 'Z'], [0, 0, 0]], renk: '227, 78, 78' },
   };
   
-  // Rastgele bir tetromino oluşturur
-  export const rastgeleTetromino = () => {
-    const tetrominolar = 'IJLOSTZ';
-    const rastgeleIndex = Math.floor(Math.random() * tetrominolar.length);
-    return TETROMINOLAR[tetrominolar[rastgeleIndex]];
-  };
+    // Rastgele bir tetromino oluşturur
+    export const rastgeleTetromino = () => {
+      const tetrominolar = 'IJLOSTZ';
+      const rastgeleIndex = Math.floor(Math.random() * tetrominolar.length);
+      return TETROMINOLAR[tetrominolar[rastgeleIndex]];
+    };
   

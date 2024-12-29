@@ -4,33 +4,42 @@ export const SAHNE_YUKSEKLIK = 20; // Sahnede 20 satır var
 
 // Oyun sahnesini oluşturan fonksiyon
 export const sahneyiOlustur = () =>
-  Array.from(Array(SAHNE_YUKSEKLIK), () => 
+  Array.from({ length: SAHNE_YUKSEKLIK }, () =>
     Array(SAHNE_GENISLIK).fill([0, 'temizle'])
   );
 
-// Oyuncunun hareket ettiği sırada çarpışma olup olmadığını kontrol eden fonksiyon
+/**
+ * Oyuncunun hareket ettiği sırada çarpışma olup olmadığını kontrol eden fonksiyon
+ * @param {Object} oyuncu - oyuncu nesnesi
+ * @param {Array}  sahne - oyun sahnesi (2D dizi)
+ * @param {Object} param2 - hareket vektörü {x, y}
+ */
 export const carpismayiKontrolEt = (oyuncu, sahne, { x: hareketX, y: hareketY }) => {
-  // Oyuncu veya konum nesnesi undefined ise çarpışma varmış gibi davranır
-  if (!oyuncu || !oyuncu.konum) return true;
+  // Optional chaining ile: oyuncu?.konum olmadığı durumda doğrudan true dön
+  if (!oyuncu?.konum) return true;
 
-  // Oyuncunun Tetrominosundaki her bir hücreyi kontrol eder
-  for (let y = 0; y < oyuncu.tetromino.length; y += 1) {
-    for (let x = 0; x < oyuncu.tetromino[y].length; x += 1) {
-      // 1. Tetromino hücresinin dolu olup olmadığını kontrol et
-      if (oyuncu.tetromino[y][x] !== 0) {
-        if (
-          // 2. Sahnenin sınırlarının dışına çıkılıp çıkılmadığını kontrol et
-          !sahne[y + oyuncu.konum.y + hareketY] || 
-          // 3. Sahnenin genişliği aşıldı mı?
-          !sahne[y + oyuncu.konum.y + hareketY][x + oyuncu.konum.x + hareketX] || 
-          // 4. Hareket edilen hücrenin dolu olup olmadığını kontrol et
-          sahne[y + oyuncu.konum.y + hareketY][x + oyuncu.konum.x + hareketX][1] !== 'temizle'
-        ) {
+  // Oyuncunun Tetrominosundaki her bir hücreyi kontrol et
+  for (let satirIndex = 0; satirIndex < oyuncu.tetromino.length; satirIndex += 1) {
+    for (
+      let sutunIndex = 0; 
+      sutunIndex < oyuncu.tetromino[satirIndex].length; 
+      sutunIndex += 1
+    ) {
+      // Tetromino hücresinin dolu olup olmadığını kontrol et
+      if (oyuncu.tetromino[satirIndex][sutunIndex] !== 0) {
+
+        // Sahnede ilgili hücreye optional chaining ile eriş
+        const hucreDurumu = sahne
+          ?.[satirIndex + oyuncu.konum.y + hareketY]
+          ?.[sutunIndex + oyuncu.konum.x + hareketX]?.[1];
+
+        // Hücre yoksa (undefined) veya "temizle" değilse çarpışma var
+        if (hucreDurumu !== 'temizle') {
           return true; // Çarpışma tespit edildi
         }
       }
     }
   }
-  // Çarpışma yoksa false döndür
+  // Tüm hücreler temiz ise çarpışma yok
   return false;
 };
